@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic College Admin Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f6f9; color: #333; }
+        .dashboard-container { max-width: 850px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        h2 { text-align: center; color: #2c3e50; border-bottom: 3px solid #007bff; padding-bottom: 10px; margin-bottom: 20px; }
+        h3 { color: #2c3e50; margin-top: 25px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; }
+        label { margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { color: white; padding: 12px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 15px; }
+        .btn-green { background: #28a745; } .btn-blue { background: #007bff; } .btn-red { background: #dc3545; } .btn-purple { background: #6f42c1; }
+        
+        .promo-box { background: #fff3cd; border: 2px solid #ffeeba; padding: 20px; border-radius: 8px; margin-top: 20px;}
+        .promo-box h3 { border: none; margin-top: 0; color: #856404; text-align: center; font-size: 20px;}
+        .promo-box p { color: #856404; font-size: 14px; text-align: center; margin-top: 0; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-warning:hover { background: #e0a800; }
+
+        .message-box { padding: 12px; display: none; border-radius: 4px; font-weight: bold; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+    <div class="card">
+        <h2>1. New Student Registration</h2>
+        <form id="registrationForm">
+            <h3>Student Details</h3>
+            <div class="row">
+                <div class="form-group"><label>Official Student ID:</label><input type="number" id="studentId" required></div>
+                <div class="form-group"><label>Date of Birth:</label><input type="date" id="dob" required></div>
+            </div>
+            <div class="row">
+                <div class="form-group"><label>First Name:</label><input type="text" id="firstName" required></div>
+                <div class="form-group"><label>Last Name:</label><input type="text" id="lastName" required></div>
+                <div class="form-group">
+                    <label>Gender:</label>
+                    <select id="gender" required><option value="Male">Male</option><option value="Female">Female</option></select>
+                </div>
+            </div>
+            <div class="form-group"><label>Student Address:</label><textarea id="address" rows="2" required></textarea></div>
+            <div class="form-group"><label>Photograph:</label><input type="file" id="studentPhoto" accept="image/*" required></div>
+
+            <h3>Father's Details</h3>
+            <div class="row">
+                <div class="form-group"><label>NIC Number:</label><input type="text" id="fatherNic" required></div>
+                <div class="form-group"><label>Full Name:</label><input type="text" id="fatherName" required></div>
+            </div>
+            <div class="row">
+                <div class="form-group"><label>Contact Number:</label><input type="tel" id="fatherPhone" required></div>
+                <div class="form-group"><label>Address:</label><input type="text" id="fatherAddress" required></div>
+            </div>
+
+            <h3>Mother's Details</h3>
+            <div class="row">
+                <div class="form-group"><label>NIC Number:</label><input type="text" id="motherNic" required></div>
+                <div class="form-group"><label>Full Name:</label><input type="text" id="motherName" required></div>
+            </div>
+            <div class="row">
+                <div class="form-group"><label>Contact Number:</label><input type="tel" id="motherPhone" required></div>
+                <div class="form-group"><label>Address:</label><input type="text" id="motherAddress" required></div>
+            </div>
+
+            <h3>Initial Enrollment</h3>
+            <div class="row">
+                <div class="form-group">
+                    <label>Academic Year:</label>
+                    <select id="regYear" class="dynamic-year" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Assign to Class:</label>
+                    <select id="regClass" class="dynamic-class" required></select>
+                </div>
+            </div>
+            <button type="submit" class="btn-green">Complete Registration</button>
+        </form>
+        <div id="regMsg" class="message-box"></div>
+    </div>
+
+    <div class="card">
+        <h2>2. Enrollment & Status Update</h2>
+        <form id="enrollForm">
+            <div class="row">
+                <div class="form-group"><label>Student ID:</label><input type="number" id="enrollStudent" required></div>
+                <div class="form-group"><label>Academic Year:</label><select id="enrollYear" class="dynamic-year" required></select></div>
+                <div class="form-group"><label>New Class:</label><select id="enrollClass" class="dynamic-class" required></select></div>
+            </div>
+            <button type="submit" class="btn-blue">Enroll / Promote Student</button>
+        </form>
+        
+        <form id="statusForm" style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px;">
+            <div class="row">
+                <div class="form-group"><label>Student ID:</label><input type="number" id="statusStudent" required></div>
+                <div class="form-group">
+                    <label>Change Status To:</label>
+                    <select id="newStatus" required>
+                        <option value="Active">Active</option>
+                        <option value="Alumni">Alumni</option>
+                        <option value="Transferred">Transferred</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" style="background: #fd7e14;">Update Status</button>
+        </form>
+        <div id="enrollMsg" class="message-box"></div>
+    </div>
+
+    <div class="card" style="border: 2px solid #ffc107;">
+        <h2 style="border-bottom: 3px solid #ffc107; color: #d39e00;">3. Automated Year-End Promotion</h2>
+        <div class="promo-box">
+            <h3>WARNING: School-Wide Action</h3>
+            <p>This will permanently graduate all Grade 11s to Alumni, and promote everyone else (10 down to 6) to their next grade automatically.</p>
+            
+            <form id="autoPromoForm">
+                <div class="row">
+                    <div class="form-group">
+                        <label>Current Year (Year Ending):</label>
+                        <select id="promoCurrentYear" class="dynamic-year" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>New Year (Promote Into):</label>
+                        <select id="promoNewYear" class="dynamic-year" required></select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-warning">Execute Automated Promotion</button>
+            </form>
+            <div id="autoPromoMsg" class="message-box"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>4. Manage Exam Results</h2>
+        <form id="resultsForm">
+            <div class="row">
+                <div class="form-group"><label>Student ID:</label><input type="number" id="resStudentId" required></div>
+                <div class="form-group"><label>Academic Year:</label><select id="resYear" class="dynamic-year" required></select></div>
+            </div>
+            <div class="row">
+                <div class="form-group"><label>Subject:</label><select id="resSubject" class="dynamic-subject" required></select></div>
+                <div class="form-group">
+                    <label>Term:</label>
+                    <select id="resTerm" required><option value="1 Term">1st Term</option><option value="2 Term">2nd Term</option><option value="3 Term">3rd Term</option></select>
+                </div>
+                <div class="form-group"><label>Marks:</label><input type="number" id="resMarks" min="0" max="100"></div>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn-purple" style="flex: 2;">Save/Update Marks</button>
+                <button type="button" id="btnDeleteMark" class="btn-red" style="flex: 1; margin-left: 10px;">Delete Mark</button>
+            </div>
+        </form>
+        <div id="resMsg" class="message-box"></div>
+    </div>
+
+    <div class="card" style="border: 2px solid #dc3545;">
+        <h2 style="color: #dc3545; border-bottom: 3px solid #dc3545;">5. Manage / Delete Records</h2>
+        
+        <h3 style="margin-top: 0;">Edit Student</h3>
+        <div class="row">
+            <input type="number" id="editStudentId" placeholder="Student ID" style="flex: 2;">
+            <button type="button" id="btnSearchStudent" style="background: #6c757d; margin-top: 0; flex: 1;">Search Student</button>
+        </div>
+        <div class="row">
+            <input type="text" id="editFirstName" placeholder="First Name" class="form-group">
+            <input type="text" id="editLastName" placeholder="Last Name" class="form-group">
+            <input type="text" id="editAddress" placeholder="Address" class="form-group">
+        </div>
+        <div class="row">
+            <button type="button" id="btnUpdateStudent" class="btn-green">Update Student</button>
+            <button type="button" id="btnDeleteStudent" class="btn-red">Permanently Delete Student</button>
+        </div>
+
+        <h3>Edit Parent</h3>
+        <div class="row">
+            <input type="text" id="editNic" placeholder="Parent NIC" style="flex: 2;">
+            <button type="button" id="btnSearchParent" style="background: #6c757d; margin-top: 0; flex: 1;">Search Parent</button>
+        </div>
+        <div class="row">
+            <input type="text" id="editParentName" placeholder="Full Name" class="form-group">
+            <input type="text" id="editParentPhone" placeholder="Phone" class="form-group">
+            <input type="text" id="editParentAddress" placeholder="Address" class="form-group">
+        </div>
+        <div class="row">
+            <button type="button" id="btnUpdateParent" class="btn-green">Update Parent</button>
+            <button type="button" id="btnDeleteParent" class="btn-red">Permanently Delete Parent</button>
+        </div>
+
+        <div id="crudMsg" class="message-box"></div>
+    </div>
+
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3000';
+
+    function showMessage(elementId, success, text) {
+        const el = document.getElementById(elementId);
+        el.style.display = 'block';
+        el.innerHTML = text;
+        el.style.background = success ? '#d4edda' : '#f8d7da';
+        el.style.color = success ? '#155724' : '#721c24';
+    }
+
+    // Initialize UI Dropdowns dynamically
+    window.onload = async () => {
+        const currentYear = new Date().getFullYear();
+        document.querySelectorAll('.dynamic-year').forEach(select => {
+            select.innerHTML = '<option value="" disabled selected>-- Select Year --</option>';
+            for (let i = -1; i <= 5; i++) { 
+                const yr = currentYear + i; 
+                select.innerHTML += `<option value="${yr}">${yr}</option>`;
+            }
+        });
+
+        try {
+            const classRes = await fetch(`${API_URL}/api/classes`);
+            const classData = await classRes.json();
+            document.querySelectorAll('.dynamic-class').forEach(select => {
+                select.innerHTML = '<option value="" disabled selected>-- Select Class --</option>';
+                classData.data.forEach(c => select.innerHTML += `<option value="${c.class_id}">Grade ${c.grade_level} - ${c.section_name}</option>`);
+            });
+        } catch (e) { console.error("Could not load classes"); }
+
+        try {
+            const subjRes = await fetch(`${API_URL}/api/subjects`);
+            const subjData = await subjRes.json();
+            document.querySelectorAll('.dynamic-subject').forEach(select => {
+                select.innerHTML = '<option value="" disabled selected>-- Select Subject --</option>';
+                subjData.data.forEach(s => select.innerHTML += `<option value="${s.subject_id}">${s.subject_name}</option>`);
+            });
+        } catch (e) { console.error("Could not load subjects"); }
+    };
+
+    // Registration
+    document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('student_id', document.getElementById('studentId').value);
+        formData.append('first_name', document.getElementById('firstName').value);
+        formData.append('last_name', document.getElementById('lastName').value);
+        formData.append('date_of_birth', document.getElementById('dob').value);
+        formData.append('gender', document.getElementById('gender').value);
+        formData.append('address', document.getElementById('address').value);
+        formData.append('studentPhoto', document.getElementById('studentPhoto').files[0]);
+        formData.append('father_nic', document.getElementById('fatherNic').value);
+        formData.append('father_name', document.getElementById('fatherName').value);
+        formData.append('father_phone', document.getElementById('fatherPhone').value);
+        formData.append('father_address', document.getElementById('fatherAddress').value);
+        formData.append('mother_nic', document.getElementById('motherNic').value);
+        formData.append('mother_name', document.getElementById('motherName').value);
+        formData.append('mother_phone', document.getElementById('motherPhone').value);
+        formData.append('mother_address', document.getElementById('motherAddress').value);
+        formData.append('academic_year', document.getElementById('regYear').value);
+        formData.append('class_id', document.getElementById('regClass').value);
+
+        try {
+            const res = await fetch(`${API_URL}/api/register-student`, { method: 'POST', body: formData });
+            const data = await res.json();
+            showMessage('regMsg', data.success, data.message);
+            if(data.success) e.target.reset();
+        } catch (err) { showMessage('regMsg', false, 'Network error.'); }
+    });
+
+    // Individual Enrollment
+    document.getElementById('enrollForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = { student_id: document.getElementById('enrollStudent').value, academic_year: document.getElementById('enrollYear').value, class_id: document.getElementById('enrollClass').value };
+        try {
+            const res = await fetch(`${API_URL}/api/enroll-student`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            showMessage('enrollMsg', data.success, data.message);
+        } catch (err) { showMessage('enrollMsg', false, 'Network error.'); }
+    });
+
+    // Update Status
+    document.getElementById('statusForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = { student_id: document.getElementById('statusStudent').value, new_status: document.getElementById('newStatus').value };
+        try {
+            const res = await fetch(`${API_URL}/api/update-status`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            showMessage('enrollMsg', data.success, data.message);
+        } catch (err) { showMessage('enrollMsg', false, 'Network error.'); }
+    });
+
+    // SCHOOL-WIDE AUTOMATED PROMOTION (NEW)
+    document.getElementById('autoPromoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const currYear = document.getElementById('promoCurrentYear').value;
+        const newYear = document.getElementById('promoNewYear').value;
+
+        if (currYear === newYear) {
+            return showMessage('autoPromoMsg', false, "The new academic year must be different from the current one.");
+        }
+
+        const confirmation = confirm(`DANGER: Are you absolutely sure you want to run the full school promotion from ${currYear} into ${newYear}? \n\nThis will instantly graduate Grade 11s and move ALL active students up a grade!`);
+        if (!confirmation) return;
+
+        showMessage('autoPromoMsg', true, "Processing promotion... Please wait.");
+        
+        try {
+            const payload = { current_academic_year: currYear, new_academic_year: newYear };
+            const res = await fetch(`${API_URL}/api/school-wide-promotion`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            showMessage('autoPromoMsg', data.success, data.message);
+            if(data.success) e.target.reset();
+        } catch (err) { showMessage('autoPromoMsg', false, 'Network error.'); }
+    });
+
+    // Enter / Update Results
+    document.getElementById('resultsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = { student_id: document.getElementById('resStudentId').value, academic_year: document.getElementById('resYear').value, subject_id: document.getElementById('resSubject').value, term: document.getElementById('resTerm').value, marks: document.getElementById('resMarks').value };
+        try {
+            const res = await fetch(`${API_URL}/api/enter-results`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            showMessage('resMsg', data.success, data.message);
+        } catch (err) { showMessage('resMsg', false, 'Network error.'); }
+    });
+
+    // Delete Mark
+    document.getElementById('btnDeleteMark').addEventListener('click', async () => {
+        const payload = { student_id: document.getElementById('resStudentId').value, academic_year: document.getElementById('resYear').value, subject_id: document.getElementById('resSubject').value, term: document.getElementById('resTerm').value };
+        if(!payload.student_id || !payload.academic_year || !payload.subject_id) return showMessage('resMsg', false, 'Fill Student ID, Year, Subject, and Term to delete.');
+        try {
+            const res = await fetch(`${API_URL}/api/delete-exam`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            showMessage('resMsg', data.success, data.message);
+        } catch (err) { showMessage('resMsg', false, 'Network error.'); }
+    });
+
+    // CRUD MANAGER
+    document.getElementById('btnSearchStudent').addEventListener('click', async () => {
+        const id = document.getElementById('editStudentId').value;
+        try {
+            const res = await fetch(`${API_URL}/api/student/${id}`);
+            const data = await res.json();
+            if(data.success) {
+                document.getElementById('editFirstName').value = data.data.first_name;
+                document.getElementById('editLastName').value = data.data.last_name;
+                document.getElementById('editAddress').value = data.data.address;
+                showMessage('crudMsg', true, 'Student found.');
+            } else showMessage('crudMsg', false, data.message);
+        } catch (err) { showMessage('crudMsg', false, 'Error searching.'); }
+    });
+
+    document.getElementById('btnUpdateStudent').addEventListener('click', async () => {
+        const payload = { student_id: document.getElementById('editStudentId').value, first_name: document.getElementById('editFirstName').value, last_name: document.getElementById('editLastName').value, address: document.getElementById('editAddress').value };
+        try {
+            const res = await fetch(`${API_URL}/api/update-student-info`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            showMessage('crudMsg', data.success, data.message);
+        } catch (err) { showMessage('crudMsg', false, 'Error updating.'); }
+    });
+
+    document.getElementById('btnDeleteStudent').addEventListener('click', async () => {
+        const id = document.getElementById('editStudentId').value;
+        if(!confirm('DANGER: Delete student entirely?')) return;
+        try {
+            const res = await fetch(`${API_URL}/api/delete-student/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            showMessage('crudMsg', data.success, data.message);
+        } catch (err) { showMessage('crudMsg', false, 'Error deleting.'); }
+    });
+
+    document.getElementById('btnSearchParent').addEventListener('click', async () => {
+        const nic = document.getElementById('editNic').value;
+        try {
+            const res = await fetch(`${API_URL}/api/parent/${nic}`);
+            const data = await res.json();
+            if(data.success) {
+                document.getElementById('editParentName').value = data.data.parent_name;
+                document.getElementById('editParentPhone').value = data.data.phone_number;
+                document.getElementById('editParentAddress').value = data.data.address;
+                showMessage('crudMsg', true, 'Parent found.');
+            } else showMessage('crudMsg', false, data.message);
+        } catch (err) { showMessage('crudMsg', false, 'Error searching.'); }
+    });
+
+    document.getElementById('btnUpdateParent').addEventListener('click', async () => {
+        const payload = { nic: document.getElementById('editNic').value, parent_name: document.getElementById('editParentName').value, phone_number: document.getElementById('editParentPhone').value, address: document.getElementById('editParentAddress').value };
+        try {
+            const res = await fetch(`${API_URL}/api/update-parent-info`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            showMessage('crudMsg', data.success, data.message);
+        } catch (err) { showMessage('crudMsg', false, 'Error updating.'); }
+    });
+
+    document.getElementById('btnDeleteParent').addEventListener('click', async () => {
+        const nic = document.getElementById('editNic').value;
+        if(!confirm('Delete Parent? (Only works if they have no active students)')) return;
+        try {
+            const res = await fetch(`${API_URL}/api/delete-parent/${nic}`, { method: 'DELETE' });
+            const data = await res.json();
+            showMessage('crudMsg', data.success, data.message);
+        } catch (err) { showMessage('crudMsg', false, 'Error deleting.'); }
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile & Report Card</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f6f9; color: #333; }
+        .dashboard-container { max-width: 900px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        h2, h3, h4 { color: #2c3e50; }
+        h2 { text-align: center; border-bottom: 3px solid #17a2b8; padding-bottom: 10px; display: inline-block; margin-bottom: 20px;}
+        h3 { border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 25px; }
+        
+        /* Search Bar */
+        .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-bar input { flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
+        .search-bar button { background: #17a2b8; color: white; padding: 12px 20px; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .search-bar button:hover { background: #138496; }
+
+        /* Profile Layout */
+        #profileContent { display: none; }
+        .profile-header { display: flex; gap: 30px; align-items: center; margin-bottom: 20px; background: #e9ecef; padding: 20px; border-radius: 8px; }
+        .profile-pic { width: 150px; height: 150px; border-radius: 8px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
+        .info-item span { font-weight: bold; color: #555; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: #fff; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #495057; }
+        tr:nth-child(even) { background-color: #fdfdfd; }
+        .marks-cell { text-align: center; font-weight: bold; }
+        
+        .message-box { padding: 12px; display: none; border-radius: 4px; font-weight: bold; text-align: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="card">
+            <div style="text-align: center;"><h2>View Student Profile</h2></div>
+            
+            <div class="search-bar">
+                <input type="number" id="searchId" placeholder="Enter Official Student ID (e.g. 24001)" required>
+                <button id="btnSearch">Search Details</button>
+            </div>
+            <div id="searchMessage" class="message-box"></div>
+
+            <div id="profileContent">
+                
+                <!-- 1. Personal Details & Photo -->
+                <div class="profile-header">
+                    <img id="profPic" src="" alt="Student Photo" class="profile-pic" onerror="this.src='https://via.placeholder.com/150?text=No+Photo'">
+                    <div class="info-grid">
+                        <div class="info-item"><span>Full Name:</span> <span id="lblFullName" style="font-weight:normal;"></span></div>
+                        <div class="info-item"><span>Student ID:</span> <span id="lblStudentId" style="font-weight:normal;"></span></div>
+                        <div class="info-item"><span>Current Class:</span> <span id="lblClass" style="font-weight:bold; color:#007bff;"></span></div>
+                        <div class="info-item"><span>Current Status:</span> <span id="lblStatus" style="font-weight:bold; color:#28a745;"></span></div>
+                        <div class="info-item"><span>Date of Birth:</span> <span id="lblDob" style="font-weight:normal;"></span></div>
+                        <div class="info-item"><span>Gender:</span> <span id="lblGender" style="font-weight:normal;"></span></div>
+                        <div class="info-item" style="grid-column: span 2;"><span>Address:</span> <span id="lblAddress" style="font-weight:normal;"></span></div>
+                    </div>
+                </div>
+
+                <!-- 2. Parents Details -->
+                <h3>Parents / Guardian Information</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Relationship</th>
+                            <th>Full Name</th>
+                            <th>NIC Number</th>
+                            <th>Contact Number</th>
+                            <th>Address</th>
+                        </tr>
+                    </thead>
+                    <tbody id="parentsTableBody">
+                    </tbody>
+                </table>
+
+                <!-- 3. Exam Results -->
+                <h3 id="examTitle">Academic Performance</h3>
+                <div id="examsContainer">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+
+        let subjectDictionary = {};
+        let classDictionary = {};
+
+        // Helper function to guarantee dictionaries are loaded before doing anything else
+        async function ensureDictionariesLoaded() {
+            // If they already have data, skip fetching again
+            if (Object.keys(subjectDictionary).length > 0 && Object.keys(classDictionary).length > 0) return true;
+
+            try {
+                const classRes = await fetch(`${API_URL}/api/classes`);
+                const classData = await classRes.json();
+                if (classData.success) {
+                    classData.data.forEach(c => classDictionary[c.class_id] = `Grade ${c.grade_level} - ${c.section_name}`);
+                }
+
+                const subjRes = await fetch(`${API_URL}/api/subjects`);
+                const subjData = await subjRes.json();
+                if (subjData.success) {
+                    subjData.data.forEach(s => subjectDictionary[s.subject_id] = s.subject_name);
+                }
+                return true;
+            } catch (err) {
+                console.error("Dictionary fetch error:", err);
+                return false;
+            }
+        }
+
+        function showMessage(success, text) {
+            const msgBox = document.getElementById('searchMessage');
+            msgBox.style.display = 'block';
+            msgBox.innerHTML = text;
+            msgBox.style.background = success ? '#d4edda' : '#f8d7da';
+            msgBox.style.color = success ? '#155724' : '#721c24';
+            msgBox.style.border = success ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
+        }
+
+        function formatMark(mark) {
+            if (mark === '-') return `<td class="marks-cell" style="color: #999;">-</td>`;
+            const num = parseInt(mark);
+            if (num >= 35) return `<td class="marks-cell" style="color: #28a745;">${num}</td>`; 
+            return `<td class="marks-cell" style="color: #dc3545;">${num}</td>`; 
+        }
+
+        document.getElementById('btnSearch').addEventListener('click', async () => {
+            const studentId = document.getElementById('searchId').value;
+            const profileContent = document.getElementById('profileContent');
+            
+            document.getElementById('searchMessage').style.display = 'none';
+            profileContent.style.display = 'none';
+
+            if (!studentId) {
+                showMessage(false, 'Please enter a valid Student ID.');
+                return;
+            }
+
+            // 1. Force the page to load the dictionaries first
+            const dictsLoaded = await ensureDictionariesLoaded();
+            if (!dictsLoaded) {
+                showMessage(false, "Error: Could not load Class and Subject names. Ensure the Node server is running and updated.");
+                return;
+            }
+
+            // 2. Proceed with searching the student
+            try {
+                const response = await fetch(`${API_URL}/api/student-full-profile/${studentId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const student = data.student;
+                    const parents = data.parents;
+                    const allExams = data.exams; 
+                    const enrollment = data.enrollment; 
+
+                    // Populate Personal Info
+                    document.getElementById('lblFullName').innerText = `${student.first_name} ${student.last_name}`;
+                    document.getElementById('lblStudentId').innerText = student.student_id;
+                    
+                    let dobFormatted = 'N/A';
+                    if (student.date_of_birth) {
+                        const [year, month, day] = student.date_of_birth.split('T')[0].split('-');
+                        dobFormatted = `${day}/${month}/${year}`;
+                    }
+                    document.getElementById('lblDob').innerText = dobFormatted;
+                    
+                    document.getElementById('lblGender').innerText = student.gender;
+                    document.getElementById('lblStatus').innerText = student.student_status;
+                    document.getElementById('lblAddress').innerText = student.address;
+                    
+                    document.getElementById('lblClass').innerText = enrollment ? (classDictionary[enrollment.class_id] || 'Unknown Class') : 'Not Assigned';
+
+                    const photoElement = document.getElementById('profPic');
+                    if (student.photo_url) {
+                        photoElement.src = `${API_URL}${student.photo_url}`;
+                    } else {
+                        photoElement.src = 'https://via.placeholder.com/150?text=No+Photo';
+                    }
+
+                    // Populate Parents
+                    const parentBody = document.getElementById('parentsTableBody');
+                    parentBody.innerHTML = ''; 
+                    if (parents.length > 0) {
+                        parents.forEach(p => {
+                            parentBody.innerHTML += `
+                                <tr>
+                                    <td><strong>${p.relationship}</strong></td>
+                                    <td>${p.parent_name}</td>
+                                    <td>${p.nic}</td>
+                                    <td>${p.phone_number}</td>
+                                    <td>${p.address || '-'}</td>
+                                </tr>`;
+                        });
+                    } else {
+                        parentBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No parent details found.</td></tr>`;
+                    }
+
+                    // Populate Exams
+                    const currentYear = new Date().getFullYear().toString(); 
+                    document.getElementById('examTitle').innerText = `Academic Performance (Current Year: ${currentYear})`;
+                    
+                    const currentYearExams = allExams.filter(ex => ex.academic_year.startsWith(currentYear));
+                    const examsContainer = document.getElementById('examsContainer');
+                    examsContainer.innerHTML = '';
+
+                    if (currentYearExams.length > 0) {
+                        const groupedExams = {};
+                        
+                        currentYearExams.forEach(ex => {
+                            if (!groupedExams[ex.subject_id]) {
+                                groupedExams[ex.subject_id] = { '1 Term': '-', '2 Term': '-', '3 Term': '-' };
+                            }
+                            groupedExams[ex.subject_id][ex.term] = ex.marks;
+                        });
+
+                        let yearHTML = `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th style="text-align: center;">1st Term</th>
+                                        <th style="text-align: center;">2nd Term</th>
+                                        <th style="text-align: center;">3rd Term</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+
+                        for (const subjId in groupedExams) {
+                            const marks = groupedExams[subjId];
+                            const subjName = subjectDictionary[subjId] || `Subject Code ${subjId}`;
+                            
+                            yearHTML += `
+                                <tr>
+                                    <td>${subjName}</td>
+                                    ${formatMark(marks['1 Term'])}
+                                    ${formatMark(marks['2 Term'])}
+                                    ${formatMark(marks['3 Term'])}
+                                </tr>
+                            `;
+                        }
+
+                        yearHTML += `</tbody></table>`;
+                        examsContainer.innerHTML = yearHTML;
+
+                    } else {
+                        examsContainer.innerHTML = `<p style="text-align:center; padding: 20px; background: #fff; border: 1px solid #dee2e6;">No exam results recorded for ${currentYear} yet.</p>`;
+                    }
+
+                    profileContent.style.display = 'block';
+
+                } else {
+                    showMessage(false, data.message);
+                }
+            } catch (error) {
+                showMessage(false, 'Network error while fetching student data.');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>

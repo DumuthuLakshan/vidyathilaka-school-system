@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f6f9; color: #333; }
+        .dashboard-container { max-width: 900px; margin: 0 auto; }
+        .nav-link { display: inline-block; margin-bottom: 20px; color: #007bff; text-decoration: none; font-weight: bold; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        h2 { text-align: center; color: #2c3e50; border-bottom: 3px solid #17a2b8; padding-bottom: 10px; margin-bottom: 20px;}
+        
+        .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-bar input { flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
+        .search-bar button { background: #17a2b8; color: white; padding: 12px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        
+        #profileContent { display: none; }
+        .profile-header { display: flex; gap: 30px; align-items: center; background: #e9ecef; padding: 20px; border-radius: 8px; }
+        .profile-pic { width: 150px; height: 150px; border-radius: 8px; object-fit: cover; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <a href="AdminDashboard.html" class="nav-link">← Back to Admin Dashboard</a>
+    
+    <div class="card">
+        <h2>Student Profile & Report Card</h2>
+        <div class="search-bar">
+            <input type="number" id="searchId" placeholder="Enter Student ID">
+            <button id="btnSearch">Search Profile</button>
+        </div>
+        <div id="profileContent">
+            <div class="profile-header">
+                <img id="profPic" src="" alt="Photo" class="profile-pic">
+                <div class="info-grid">
+                    <div><strong>Name:</strong> <span id="lblName"></span></div>
+                    <div><strong>Class:</strong> <span id="lblClass"></span></div>
+                    <div><strong>Status:</strong> <span id="lblStatus"></span></div>
+                </div>
+            </div>
+            <h3 id="examTitle">Academic Performance</h3>
+            <div id="examsContainer"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3000';
+    
+    document.getElementById('btnSearch').addEventListener('click', async () => {
+        const id = document.getElementById('searchId').value;
+        const res = await fetch(`${API_URL}/api/student-full-profile/${id}`);
+        const data = await res.json();
+        
+        if(data.success) {
+            document.getElementById('lblName').innerText = data.student.first_name + ' ' + data.student.last_name;
+            document.getElementById('lblStatus').innerText = data.student.student_status;
+            document.getElementById('profileContent').style.display = 'block';
+            // Add logic here to populate exams/classes just like before
+        } else {
+            alert("Student not found!");
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Data Entry Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f6f9; color: #333; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
+        h2 { text-align: center; color: #2c3e50; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { background: #007bff; color: white; padding: 12px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #0056b3; }
+        #message { margin-top: 15px; padding: 12px; display: none; border-radius: 4px; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Exam Results Entry</h2>
+        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+        
+        <form id="resultForm">
+            <div class="form-group">
+                <label for="studentId">Student ID:</label>
+                <input type="number" id="studentId" required placeholder="e.g. 24001">
+            </div>
+
+            <div class="form-group">
+                <label for="academicYear">Academic Year:</label>
+                <select id="academicYear" required>
+                    <option value="2026-2027">2026-2027</option>
+                    <option value="2027-2028">2027-2028</option>
+                    <option value="2028-2029">2028-2029</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subjectId">Subject:</label>
+                <select id="subjectId" required>
+                    <option value="" disabled selected>-- Select Subject --</option>
+                    <optgroup label="Core Subjects">
+                        <option value="1">Sinhala/Tamil (First Language)</option>
+                        <option value="2">English Language</option>
+                        <option value="3">Mathematics</option>
+                        <option value="4">Science</option>
+                        <option value="5">History</option>
+                        <option value="6">Religion (Buddhism/Hinduism/Islam/Christianity)</option>
+                    </optgroup>
+                    <optgroup label="Elective Subjects">
+                        <option value="7">Geography</option>
+                        <option value="8">Civic Education</option>
+                        <option value="9">Business and Accounting Studies</option>
+                        <option value="10">Information and Communication Technology (ICT)</option>
+                        <option value="11">Agriculture and Food Technology</option>
+                        <option value="12">Health and Physical Education</option>
+                        <option value="13">Second Language</option>
+                        <option value="14">Aesthetic Studies (Art/Music/Dance/Drama)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="term">Academic Term:</label>
+                <select id="term" required>
+                    <option value="1 Term">1 Term</option>
+                    <option value="2 Term">2 Term</option>
+                    <option value="3 Term">3 Term</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="marks">Obtained Marks:</label>
+                <input type="number" id="marks" min="0" max="100" required placeholder="Enter score (0 - 100)">
+            </div>
+
+            <button type="submit">Submit Marks</button>
+        </form>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('resultForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('message');
+            messageDiv.style.display = 'none';
+            
+            const formData = {
+                student_id: parseInt(document.getElementById('studentId').value),
+                academic_year: document.getElementById('academicYear').value,
+                subject_id: parseInt(document.getElementById('subjectId').value),
+                term: document.getElementById('term').value,
+                marks: parseInt(document.getElementById('marks').value)
+            };
+
+            try {
+                const response = await fetch('http://localhost/api/enter-results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.style.background = '#d4edda';
+                    messageDiv.style.color = '#155724';
+                    messageDiv.style.border = '1px solid #c3e6cb';
+                    messageDiv.innerHTML = data.message;
+                    document.getElementById('marks').value = '';
+                } else {
+                    messageDiv.style.background = '#f8d7da';
+                    messageDiv.style.color = '#721c24';
+                    messageDiv.style.border = '1px solid #f5c6cb';
+                    messageDiv.innerText = data.message;
+                }
+                messageDiv.style.display = 'block';
+            } catch (error) {
+                messageDiv.style.background = '#f8d7da';
+                messageDiv.style.color = '#721c24';
+                messageDiv.style.border = '1px solid #f5c6cb';
+                messageDiv.innerText = 'Network error: Cannot connect to the local server.';
+                messageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Administration Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f6f9; color: #333; }
+        .dashboard-container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; border-bottom: 3px solid #007bff; padding-bottom: 10px; display: inline-block; }
+        h3 { color: #2c3e50; margin-top: 25px; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+        .row { display: flex; gap: 15px; }
+        .row .form-group { flex: 1; }
+        label { margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        input[type="file"] { padding: 7px; background: #fff; }
+        
+        button { color: white; padding: 12px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 15px; transition: background 0.3s; }
+        .btn-register { background: #28a745; }
+        .btn-register:hover { background: #218838; }
+        .btn-enroll { background: #007bff; }
+        .btn-enroll:hover { background: #0056b3; }
+        .btn-status { background: #fd7e14; }
+        .btn-status:hover { background: #e86e04; }
+        .btn-results { background: #6f42c1; }
+        .btn-results:hover { background: #5a32a3; }
+
+        .message-box { margin-top: 15px; padding: 12px; display: none; border-radius: 4px; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <div class="card">
+            <div style="text-align: center;"><h2>1. New Student Registration</h2></div>
+            
+            <form id="registrationForm">
+                <h3>Student Details</h3>
+                <div class="form-group">
+                    <label for="studentId">Official Student ID (Admission No):</label>
+                    <input type="number" id="studentId" required placeholder="e.g. 24001">
+                </div>
+                
+                <div class="row">
+                    <div class="form-group"><label for="firstName">First Name:</label><input type="text" id="firstName" required></div>
+                    <div class="form-group"><label for="lastName">Last Name:</label><input type="text" id="lastName" required></div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group"><label for="dob">Date of Birth:</label><input type="date" id="dob" required></div>
+                    <div class="form-group">
+                        <label for="gender">Gender:</label>
+                        <select id="gender" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group"><label for="address">Home Address:</label><textarea id="address" rows="2"></textarea></div>
+                <div class="form-group"><label for="studentPhoto">Student Photograph:</label><input type="file" id="studentPhoto" accept="image/*" required></div>
+
+                <h3>Father's Details</h3>
+                <div class="row">
+                    <div class="form-group"><label for="fatherNic">NIC Number:</label><input type="text" id="fatherNic" required></div>
+                    <div class="form-group"><label for="fatherPhone">Contact Number:</label><input type="tel" id="fatherPhone" required></div>
+                </div>
+                <div class="form-group"><label for="fatherName">Full Name:</label><input type="text" id="fatherName" required></div>
+
+                <h3>Mother's Details</h3>
+                <div class="row">
+                    <div class="form-group"><label for="motherNic">NIC Number:</label><input type="text" id="motherNic" required></div>
+                    <div class="form-group"><label for="motherPhone">Contact Number:</label><input type="tel" id="motherPhone" required></div>
+                </div>
+                <div class="form-group"><label for="motherName">Full Name:</label><input type="text" id="motherName" required></div>
+
+                <h3>Initial Academic Enrollment</h3>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="academicYear">Academic Year:</label>
+                        <select id="academicYear" required>
+                            <option value="2026-2027">2026-2027</option>
+                            <option value="2027-2028">2027-2028</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="classId">Assign to Class:</label>
+                        <select id="classId" required>
+                            <option value="" disabled selected>-- Class --</option>
+                            <option value="1">Grade 6 - A</option>
+                            <option value="2">Grade 6 - B</option>
+                            <option value="3">Grade 6 - C</option>
+                            <option value="4">Grade 7 - A</option>
+                            <option value="5">Grade 7 - B</option>
+                            <option value="6">Grade 7 - C</option>
+                            <option value="7">Grade 8 - A</option>
+                            <option value="8">Grade 8 - B</option>
+                            <option value="9">Grade 8 - C</option>
+                            <option value="10">Grade 9 - A</option>
+                            <option value="11">Grade 9 - B</option>
+                            <option value="12">Grade 9 - C</option>
+                            <option value="13">Grade 10 - A</option>
+                            <option value="14">Grade 10 - B</option>
+                            <option value="15">Grade 10 - C</option>
+                            <option value="16">Grade 11 - A</option>
+                            <option value="17">Grade 11 - B</option>
+                            <option value="18">Grade 11 - C</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-register">Complete New Registration</button>
+            </form>
+            <div id="regMessage" class="message-box"></div>
+        </div>
+
+        <div class="card">
+            <div style="text-align: center;"><h2>2. Single Year-by-Year Enrollment</h2></div>
+            <p style="color: #666; font-size: 14px; text-align: center; margin-top: -10px;">Assign an individual existing student to their new class.</p>
+            <form id="enrollmentForm">
+                <div class="form-group">
+                    <label for="enrollStudentId">Official Student ID:</label>
+                    <input type="number" id="enrollStudentId" required placeholder="Enter existing student ID">
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="enrollAcademicYear">New Academic Year:</label>
+                        <select id="enrollAcademicYear" required>
+                            <option value="2026-2027">2026-2027</option>
+                            <option value="2027-2028">2027-2028</option>
+                            <option value="2028-2029">2028-2029</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="enrollClassId">Assign to New Class:</label>
+                        <select id="enrollClassId" required>
+                            <option value="" disabled selected>-- Select Class --</option>
+                            <option value="1">Grade 6 - A</option>
+                            <option value="2">Grade 6 - B</option>
+                            <option value="3">Grade 6 - C</option>
+                            <option value="4">Grade 7 - A</option>
+                            <option value="5">Grade 7 - B</option>
+                            <option value="6">Grade 7 - C</option>
+                            <option value="7">Grade 8 - A</option>
+                            <option value="8">Grade 8 - B</option>
+                            <option value="9">Grade 8 - C</option>
+                            <option value="10">Grade 9 - A</option>
+                            <option value="11">Grade 9 - B</option>
+                            <option value="12">Grade 9 - C</option>
+                            <option value="13">Grade 10 - A</option>
+                            <option value="14">Grade 10 - B</option>
+                            <option value="15">Grade 10 - C</option>
+                            <option value="16">Grade 11 - A</option>
+                            <option value="17">Grade 11 - B</option>
+                            <option value="18">Grade 11 - C</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-enroll">Assign to Class</button>
+            </form>
+            <div id="enrollMessage" class="message-box"></div>
+        </div>
+
+        <div class="card">
+            <div style="text-align: center;"><h2>3. Update Single Student Status</h2></div>
+            <p style="color: #666; font-size: 14px; text-align: center; margin-top: -10px;">Use when a student graduates Grade 11 or transfers out.</p>
+            <form id="statusForm">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="statusStudentId">Official Student ID:</label>
+                        <input type="number" id="statusStudentId" required placeholder="Enter student ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="newStatus">Change Status To:</label>
+                        <select id="newStatus" required>
+                            <option value="" disabled selected>-- Select Status --</option>
+                            <option value="Active">Active (Current Student)</option>
+                            <option value="Alumni">Alumni (Graduated O/L or A/L)</option>
+                            <option value="Transferred">Transferred (Left early)</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-status">Update Status</button>
+            </form>
+            <div id="statusMessage" class="message-box"></div>
+        </div>
+
+        <div class="card" style="border: 2px solid #007bff;">
+            <div style="text-align: center;"><h2>4. Bulk Class Promotion</h2></div>
+            <p style="color: #666; font-size: 14px; text-align: center; margin-top: -10px;">Move an entire class to their new grade for the next year.</p>
+            <form id="batchEnrollForm">
+                <h3>From (Current Class):</h3>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Academic Year:</label>
+                        <select id="batchCurrentYear" required>
+                            <option value="2026-2027">2026-2027</option>
+                            <option value="2027-2028">2027-2028</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Class:</label>
+                        <select id="batchCurrentClass" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option value="1">Grade 6 - A</option>
+                            <option value="2">Grade 6 - B</option>
+                            <option value="3">Grade 6 - C</option>
+                            <option value="4">Grade 7 - A</option>
+                            <option value="5">Grade 7 - B</option>
+                            <option value="6">Grade 7 - C</option>
+                            <option value="7">Grade 8 - A</option>
+                            <option value="8">Grade 8 - B</option>
+                            <option value="9">Grade 8 - C</option>
+                            <option value="10">Grade 9 - A</option>
+                            <option value="11">Grade 9 - B</option>
+                            <option value="12">Grade 9 - C</option>
+                            <option value="13">Grade 10 - A</option>
+                            <option value="14">Grade 10 - B</option>
+                            <option value="15">Grade 10 - C</option>
+                            <option value="16">Grade 11 - A</option>
+                            <option value="17">Grade 11 - B</option>
+                            <option value="18">Grade 11 - C</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3>To (New Class):</h3>
+                <div class="row">
+                    <div class="form-group">
+                        <label>New Academic Year:</label>
+                        <select id="batchNewYear" required>
+                            <option value="2027-2028">2027-2028</option>
+                            <option value="2028-2029">2028-2029</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Promote To:</label>
+                        <select id="batchNewClass" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option value="1">Grade 6 - A</option>
+                            <option value="2">Grade 6 - B</option>
+                            <option value="3">Grade 6 - C</option>
+                            <option value="4">Grade 7 - A</option>
+                            <option value="5">Grade 7 - B</option>
+                            <option value="6">Grade 7 - C</option>
+                            <option value="7">Grade 8 - A</option>
+                            <option value="8">Grade 8 - B</option>
+                            <option value="9">Grade 8 - C</option>
+                            <option value="10">Grade 9 - A</option>
+                            <option value="11">Grade 9 - B</option>
+                            <option value="12">Grade 9 - C</option>
+                            <option value="13">Grade 10 - A</option>
+                            <option value="14">Grade 10 - B</option>
+                            <option value="15">Grade 10 - C</option>
+                            <option value="16">Grade 11 - A</option>
+                            <option value="17">Grade 11 - B</option>
+                            <option value="18">Grade 11 - C</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-enroll" style="background: #17a2b8;">Promote Entire Class</button>
+            </form>
+            <div id="batchMessage" class="message-box"></div>
+        </div>
+
+        <div class="card" style="border: 2px solid #fd7e14;">
+            <div style="text-align: center;"><h2>5. Bulk Graduation (Alumni)</h2></div>
+            <p style="color: #666; font-size: 14px; text-align: center; margin-top: -10px;">Select a graduating Grade 11 class to mark all its students as Alumni.</p>
+            <form id="batchStatusForm">
+                <div class="row">
+                    <div class="form-group">
+                        <label>Graduating Year:</label>
+                        <select id="gradYear" required>
+                            <option value="2026-2027">2026-2027</option>
+                            <option value="2027-2028">2027-2028</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Graduating Class:</label>
+                        <select id="gradClass" required>
+                            <option value="" disabled selected>-- Select Grade 11 Class --</option>
+                            <option value="16">Grade 11 - A</option>
+                            <option value="17">Grade 11 - B</option>
+                            <option value="18">Grade 11 - C</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Change Status To:</label>
+                        <select id="gradStatus" required>
+                            <option value="Alumni" selected>Alumni (Graduated)</option>
+                            <option value="Transferred">Transferred</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-status">Update Entire Class Status</button>
+            </form>
+            <div id="batchStatusMessage" class="message-box"></div>
+        </div>
+
+        <div class="card" style="border: 2px solid #6f42c1;">
+            <div style="text-align: center;"><h2>6. Enter Exam Results</h2></div>
+            <p style="color: #666; font-size: 14px; text-align: center; margin-top: -10px;">Record a student's numeric marks for a specific term and subject.</p>
+            <form id="resultsForm">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="resStudentId">Official Student ID:</label>
+                        <input type="number" id="resStudentId" required placeholder="Enter student ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="resAcademicYear">Academic Year:</label>
+                        <select id="resAcademicYear" required>
+                            <option value="2026-2027">2026-2027</option>
+                            <option value="2027-2028">2027-2028</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="resTerm">Term:</label>
+                        <select id="resTerm" required>
+                            <option value="" disabled selected>-- Select Term --</option>
+                            <option value="1 Term">1 Term</option>
+                            <option value="2 Term">2 Term</option>
+                            <option value="3 Term">3 Term</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="resSubjectId">Subject:</label>
+                        <select id="resSubjectId" required>
+                            <option value="" disabled selected>-- Select Subject --</option>
+                            <option value="1">Mathematics</option>
+                            <option value="2">Science</option>
+                            <option value="3">Information and Communication Technology (ICT)</option>
+                            <option value="4">English</option>
+                            <option value="5">Sinhala / Tamil Native Language</option>
+                            <option value="6">History</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="resMarks">Marks (0-100):</label>
+                    <input type="number" id="resMarks" min="0" max="100" required placeholder="Enter numeric marks">
+                </div>
+                <button type="submit" class="btn-results">Save Exam Result</button>
+            </form>
+            <div id="resMessage" class="message-box"></div>
+        </div>
+
+        <div class="card" style="border: 2px solid #dc3545;">
+            <div style="text-align: center;"><h2 style="border-bottom: 3px solid #dc3545; color: #dc3545;">7. Edit or Delete Student</h2></div>
+            <p style="color: #666; font-size: 14px; text-align: center; margin-top: -10px;">Search for a student to verify their identity before changing or deleting their data.</p>
+            
+            <form id="editDeleteForm">
+                <div class="row">
+                    <div class="form-group" style="flex: 3;">
+                        <label for="editStudentId">Official Student ID:</label>
+                        <input type="number" id="editStudentId" required placeholder="Enter student ID">
+                    </div>
+                    <div class="form-group" style="flex: 1; justify-content: flex-end;">
+                        <button type="button" id="btnSearchStudent" style="background: #6c757d; margin-top: 0;">Search Details</button>
+                    </div>
+                </div>
+                
+                <h3>Update Information (Leave blank to keep current data)</h3>
+                <div class="row">
+                    <div class="form-group"><label for="editFirstName">First Name:</label><input type="text" id="editFirstName" placeholder="Leave blank to keep old name"></div>
+                    <div class="form-group"><label for="editLastName">Last Name:</label><input type="text" id="editLastName" placeholder="Leave blank to keep old name"></div>
+                </div>
+                <div class="form-group">
+                    <label for="editAddress">Home Address:</label>
+                    <textarea id="editAddress" rows="2" placeholder="Leave blank to keep old address"></textarea>
+                </div>
+                
+                <div class="row" style="margin-top: 15px;">
+                    <button type="button" id="btnUpdateStudent" class="btn-enroll" style="background: #28a745; flex: 1; margin-right: 10px;">Update Data</button>
+                    <button type="button" id="btnDeleteStudent" class="btn-status" style="background: #dc3545; flex: 1;">Delete Student</button>
+                </div>
+            </form>
+            <div id="editDeleteMessage" class="message-box"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // Set the base URL to match your updated server.js port 3000
+        const API_URL = 'http://localhost:3000';
+
+        function showMessage(elementId, success, text) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'block';
+            el.innerHTML = text;
+            if (success) {
+                el.style.background = '#d4edda'; el.style.color = '#155724'; el.style.border = '1px solid #c3e6cb';
+            } else {
+                el.style.background = '#f8d7da'; el.style.color = '#721c24'; el.style.border = '1px solid #f5c6cb';
+            }
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('regMessage').style.display = 'none'; 
+            
+            const formData = new FormData();
+            
+            formData.append('student_id', document.getElementById('studentId').value);
+            formData.append('first_name', document.getElementById('firstName').value);
+            formData.append('last_name', document.getElementById('lastName').value);
+            formData.append('date_of_birth', document.getElementById('dob').value);
+            formData.append('gender', document.getElementById('gender').value);
+            formData.append('address', document.getElementById('address').value);
+            
+            const photoInput = document.getElementById('studentPhoto');
+            if(photoInput.files[0]) formData.append('studentPhoto', photoInput.files[0]);
+
+            formData.append('father_nic', document.getElementById('fatherNic').value);
+            formData.append('father_name', document.getElementById('fatherName').value);
+            formData.append('father_phone', document.getElementById('fatherPhone').value);
+
+            formData.append('mother_nic', document.getElementById('motherNic').value);
+            formData.append('mother_name', document.getElementById('motherName').value);
+            formData.append('mother_phone', document.getElementById('motherPhone').value);
+
+            formData.append('academic_year', document.getElementById('academicYear').value);
+            formData.append('class_id', document.getElementById('classId').value);
+
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/register-student`, { method: 'POST', body: formData });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('regMessage', true, data.message);
+                    document.getElementById('registrationForm').reset();
+                } else { showMessage('regMessage', false, data.message); }
+            } catch (error) { showMessage('regMessage', false, 'Network error: Cannot connect to the server.'); }
+        });
+
+        document.getElementById('enrollmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('enrollMessage').style.display = 'none'; 
+            const payload = {
+                student_id: parseInt(document.getElementById('enrollStudentId').value),
+                academic_year: document.getElementById('enrollAcademicYear').value,
+                class_id: parseInt(document.getElementById('enrollClassId').value)
+            };
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/enroll-student`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                showMessage('enrollMessage', data.success, data.message);
+                if (data.success) document.getElementById('enrollmentForm').reset();
+            } catch (error) { showMessage('enrollMessage', false, 'Network error.'); }
+        });
+
+        document.getElementById('statusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('statusMessage').style.display = 'none'; 
+            const payload = {
+                student_id: parseInt(document.getElementById('statusStudentId').value),
+                new_status: document.getElementById('newStatus').value
+            };
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/update-status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                showMessage('statusMessage', data.success, data.message);
+                if (data.success) document.getElementById('statusForm').reset();
+            } catch (error) { showMessage('statusMessage', false, 'Network error.'); }
+        });
+
+        document.getElementById('batchEnrollForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('batchMessage').style.display = 'none'; 
+            const payload = {
+                current_academic_year: document.getElementById('batchCurrentYear').value,
+                current_class_id: parseInt(document.getElementById('batchCurrentClass').value),
+                new_academic_year: document.getElementById('batchNewYear').value,
+                new_class_id: parseInt(document.getElementById('batchNewClass').value)
+            };
+            if(payload.current_academic_year === payload.new_academic_year) { showMessage('batchMessage', false, 'Error: The new academic year must be different from the current one.'); return; }
+            if(!confirm("Are you sure you want to move all students from this class?")) return;
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/batch-enroll`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                showMessage('batchMessage', data.success, data.message);
+                if (data.success) document.getElementById('batchEnrollForm').reset();
+            } catch (error) { showMessage('batchMessage', false, 'Network error.'); }
+        });
+
+        document.getElementById('batchStatusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('batchStatusMessage').style.display = 'none'; 
+            const payload = {
+                academic_year: document.getElementById('gradYear').value,
+                class_id: parseInt(document.getElementById('gradClass').value),
+                new_status: document.getElementById('gradStatus').value
+            };
+            if(!confirm(`WARNING: Are you sure you want to mark all students in this class as ${payload.new_status}?`)) return;
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/batch-update-status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                showMessage('batchStatusMessage', data.success, data.message);
+                if (data.success) document.getElementById('batchStatusForm').reset();
+            } catch (error) { showMessage('batchStatusMessage', false, 'Network error.'); }
+        });
+
+        document.getElementById('resultsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('resMessage').style.display = 'none'; 
+            const payload = {
+                student_id: parseInt(document.getElementById('resStudentId').value),
+                academic_year: document.getElementById('resAcademicYear').value,
+                term: document.getElementById('resTerm').value,
+                subject_id: parseInt(document.getElementById('resSubjectId').value),
+                marks: parseInt(document.getElementById('resMarks').value)
+            };
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/enter-results`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                showMessage('resMessage', data.success, data.message);
+                if (data.success) document.getElementById('resultsForm').reset();
+            } catch (error) { showMessage('resMessage', false, 'Network error.'); }
+        });
+
+        // 7. EDIT AND DELETE FORM HANDLERS
+        document.getElementById('btnSearchStudent').addEventListener('click', async () => {
+            document.getElementById('editDeleteMessage').style.display = 'none'; 
+            const studentId = document.getElementById('editStudentId').value;
+            
+            if(!studentId) {
+                showMessage('editDeleteMessage', false, 'Please enter a Student ID to search.');
+                return;
+            }
+
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/student/${studentId}`);
+                const data = await response.json();
+                
+                if(data.success) {
+                    document.getElementById('editFirstName').value = data.data.first_name;
+                    document.getElementById('editLastName').value = data.data.last_name;
+                    document.getElementById('editAddress').value = data.data.address;
+                    showMessage('editDeleteMessage', true, 'Student found! You may now edit their details.');
+                } else {
+                    showMessage('editDeleteMessage', false, data.message);
+                }
+            } catch (error) { showMessage('editDeleteMessage', false, 'Network error while searching.'); }
+        });
+
+        document.getElementById('btnUpdateStudent').addEventListener('click', async () => {
+            document.getElementById('editDeleteMessage').style.display = 'none'; 
+            
+            const payload = {
+                student_id: parseInt(document.getElementById('editStudentId').value),
+                first_name: document.getElementById('editFirstName').value,
+                last_name: document.getElementById('editLastName').value,
+                address: document.getElementById('editAddress').value
+            };
+
+            if(!payload.student_id) {
+                showMessage('editDeleteMessage', false, 'Student ID is required to update data.');
+                return;
+            }
+
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/update-student-info`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                showMessage('editDeleteMessage', data.success, data.message);
+                if (data.success) document.getElementById('editDeleteForm').reset();
+            } catch (error) { showMessage('editDeleteMessage', false, 'Network error.'); }
+        });
+
+        document.getElementById('btnDeleteStudent').addEventListener('click', async () => {
+            document.getElementById('editDeleteMessage').style.display = 'none'; 
+            const studentId = document.getElementById('editStudentId').value;
+            
+            if(!studentId) {
+                showMessage('editDeleteMessage', false, 'Please enter a Student ID to delete.');
+                return;
+            }
+
+            if(!confirm(`DANGER: Are you absolutely sure you want to PERMANENTLY DELETE Student ID ${studentId} and all of their exam marks and enrollments? This cannot be undone!`)) return;
+
+            try {
+                // Updated fetch call to use API_URL
+                const response = await fetch(`${API_URL}/api/delete-student/${studentId}`, { method: 'DELETE' });
+                const data = await response.json();
+                showMessage('editDeleteMessage', data.success, data.message);
+                if (data.success) document.getElementById('editDeleteForm').reset();
+            } catch (error) { showMessage('editDeleteMessage', false, 'Network error.'); }
+        });
+    </script>
+</body>
+</html>

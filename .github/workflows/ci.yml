@@ -1,0 +1,62 @@
+name: System Quality Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mariadb:10.6
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: vidyathilakacollege
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    - name: Install Dependencies
+      run: |
+        npm install express mysql2 cors multer
+        npm install --save-dev jest supertest
+
+    - name: Build Database Schema
+      run: |
+        mysql -h 127.0.0.1 -u root vidyathilakacollege -e "
+        CREATE TABLE classes (class_id INT AUTO_INCREMENT PRIMARY KEY, grade_level INT, section_name VARCHAR(5));
+        INSERT INTO classes (grade_level, section_name) VALUES (6, 'A'), (10, 'A'), (11, 'A');
+        
+        CREATE TABLE subjects (subject_id INT AUTO_INCREMENT PRIMARY KEY, subject_name VARCHAR(100), subject_type VARCHAR(20));
+        INSERT INTO subjects (subject_name, subject_type) VALUES ('Mathematics', 'Core');
+        
+        CREATE TABLE student (student_id INT PRIMARY KEY, first_name VARCHAR(50), last_name VARCHAR(50), date_of_birth DATE, gender VARCHAR(10), address TEXT, photo_url VARCHAR(255), student_status VARCHAR(20) DEFAULT 'Active');
+        
+        CREATE TABLE parent (nic VARCHAR(50) PRIMARY KEY, parent_name VARCHAR(100), phone_number VARCHAR(15), address VARCHAR(100));
+        
+        CREATE TABLE student_parent (student_id INT, nic VARCHAR(50), relationship VARCHAR(30), PRIMARY KEY (student_id, nic));
+        
+        CREATE TABLE enrollments (enrollment_id INT AUTO_INCREMENT PRIMARY KEY, student_id INT, class_id INT, academic_year VARCHAR(9), UNIQUE KEY unique_enr (student_id, academic_year));
+        
+        CREATE TABLE exam_results (student_id INT, academic_year VARCHAR(9), subject_id INT, term VARCHAR(10), marks INT, PRIMARY KEY (student_id, academic_year, subject_id, term));
+        "
+
+    - name: Run Jest API Tests
+      run: npx jest --detectOpenHandles --forceExit
